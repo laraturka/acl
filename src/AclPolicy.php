@@ -3,6 +3,7 @@
 namespace Laraturka\Acl;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\DB;
 
 class AclPolicy
 {
