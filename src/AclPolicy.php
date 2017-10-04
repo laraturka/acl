@@ -26,4 +26,8 @@ class AclPolicy
         return $count>0;
     }
 
+    public function __call($method, $args) {
+        return false;
+    }
+
 }

@@ -14,7 +14,7 @@ class AclViewComposer
      */
     public function compose(View $view)
     {
-        $user = Auth::user();
+        $user = Auth()->user();
 
         $view->with('user', $user);
     }
