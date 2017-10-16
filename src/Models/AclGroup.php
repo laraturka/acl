@@ -1,21 +1,29 @@
 <?php
 
-namespace Laraturka\Acl\Models;
+namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class AclGroup extends Model
 {
+    protected $table = 'acl_groups';
+
+    protected $dates = ['created_at','updated_at'];
+
     public function users(){
-        return $this->belongsToMany('Users', 'acl_user_groups');
+        return $this->belongsToMany(User::class, 'acl_user_groups');
     }
 
     public function controllers(){
-        return $this->hasMany('Laraturka\Acl\Models\AclController');
+        return $this->hasMany(AclController::class);
     }
 
     public function gates(){
-        return $this->belongsToMany('Laraturka\Acl\Models\AclGate', 'acl_gate_groups');
+        return $this->belongsToMany(
+            AclGate::class,
+            'acl_gate_groups'
+        )->withTimestamps();
     }
 
 }

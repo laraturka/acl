@@ -23,7 +23,6 @@ trait AclHasGate
         return $this->checkIfAuthorized($gate);
     }
 
-
     public function checkIfGateAuthorized($gate){
 
         //gate name is null means wildcard allowed

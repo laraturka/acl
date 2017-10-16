@@ -14,8 +14,12 @@ class AclViewComposer
      */
     public function compose(View $view)
     {
-        $user = Auth()->user();
+        $acl = [
+            'user' => Auth()->user()
+        ];
 
-        $view->with('user', $user);
+
+
+        $view->with('acl', (object) $acl );
     }
 }
