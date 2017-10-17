@@ -97,7 +97,6 @@ class Acl {
         return self::getClasses( file_get_contents($file_name) );
     }
 
-
     static public function getClasses($code){
 
         $methods=[];

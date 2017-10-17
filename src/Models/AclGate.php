@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class AclGate extends Model
 {
+    protected $fillable = ['name'];
+
     public function groups(){
-        return $this->belongsToMany(AclGroup::class, 'acl_gate_groups');
+        return $this->belongsTo(AclGroup::class );
     }
 
     public function scopeNotSuper($query){

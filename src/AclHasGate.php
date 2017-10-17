@@ -30,8 +30,7 @@ trait AclHasGate
             ->select('acl_gates.*')
             ->join('acl_user_groups', 'acl_user_groups.user_id', '=', 'users.id')
             ->join('acl_groups', 'acl_groups.id', '=', 'acl_user_groups.acl_group_id')
-            ->join('acl_gate_groups', 'acl_gate_groups.acl_group_id', '=', 'acl_groups.id')
-            ->join('acl_gates', 'acl_gates.id', '=', 'acl_gate_groups.acl_gate_id')
+            ->join('acl_gates', 'acl_gates.acl_group_id', '=', 'acl_groups.id')
             ->where('users.id', '=', $this->id )
             ->where(function ($q) use($gate) { //Check if name is null or equal
                 $q  ->whereNull('acl_gates.name')

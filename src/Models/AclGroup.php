@@ -20,10 +20,14 @@ class AclGroup extends Model
     }
 
     public function gates(){
+
+        return $this->hasMany(AclGate::class);
+        /*
         return $this->belongsToMany(
             AclGate::class,
             'acl_gate_groups'
         )->withTimestamps();
+        */
     }
 
 }
