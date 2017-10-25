@@ -2,6 +2,10 @@
 
 namespace Laraturka\Acl;
 
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 class Acl {
 
     static public function getConfigControllerMethods(){
@@ -138,6 +142,84 @@ class Acl {
         }
 
         return ['namespace'=>$namespace,'methods'=>$methods];
+
+    }
+
+    static public $aclForUser=[];
+
+    static public function getAclForUser($user, $force=false){
+
+        //assume auth user if null
+        if( $user == null ){
+            $user = auth()->user();
+        }
+        elseif(is_int($user)){ //assume user id if integer
+            $user = User::find($user);
+        }
+
+        $id = $user->id;
+
+        //return if already get
+        if(!$force && array_key_exists($id, self::$aclForUser))
+            return self::$aclForUser[$id];
+
+        //Controller or method is null means wildcard allowed
+        $controllers = DB::table('users')
+            ->join('acl_user_groups', 'acl_user_groups.user_id', '=', 'users.id')
+            ->join('acl_groups', 'acl_groups.id', '=', 'acl_user_groups.acl_group_id')
+            ->join('acl_controllers', 'acl_controllers.acl_group_id', '=', 'acl_user_groups.acl_group_id')
+            ->select('acl_controllers.controller','acl_controllers.method')
+            ->where('users.id', '=', $id)
+            ->get();
+
+        self::$aclForUser[$id] = $controllers;
+
+        return $controllers;
+    }
+
+    static public function checkAclForUser( $controller, $method, $user=null, $force=false){
+
+        $aclForUser = self::getAclForUser($user, $force);
+
+        foreach($aclForUser as $key=>$value){
+            if( is_null($value->controller) || $controller == $value->controller){
+                if( is_null($value->method) || $method == $value->method){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    static public function url($url, $http_method='get'){
+
+        $route = app()->router->getRoutes()->match(Request::create($url, $http_method));
+
+        $cm = str_replace('App\Http\Controllers\\', '', $route->action['controller'] );
+
+        $cm = explode('@', $cm);
+
+        $controller = $cm[0];
+
+        $method = $cm[1];
+
+        return self::checkAclForUser($controller,$method);
+
+    }
+
+    static public function url_html($html, $url, $http_method='get'){
+        return self::url($url, $http_method) ? $html : null;
+    }
+
+    static public function link_to($url, $title=null, $attr=[], $http_method='get'){
+        $title = $title===null ? $url : $title;
+        try{
+            return self::url($url, $http_method) ? html_entity_decode(link_to($url,$title,$attr)) : null;
+        } catch (\Exception $e ){
+            return false;
+        }
 
     }
 
