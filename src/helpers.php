@@ -10,3 +10,14 @@ if (! function_exists('acl')) {
 }
 
 /**/
+
+
+use Laraturka\Acl\Acl;
+
+if (!function_exists('acl')) {
+
+    function acl($source = null)
+    {
+        return new Laraturka\Acl\Acl();
+    }
+}

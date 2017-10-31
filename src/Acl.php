@@ -5,6 +5,7 @@ namespace Laraturka\Acl;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Acl {
 
@@ -193,34 +194,49 @@ class Acl {
 
     }
 
-    static public function url($url, $http_method='get'){
+    public function url($url, $http_method='get'){
 
-        $route = app()->router->getRoutes()->match(Request::create($url, $http_method));
+        try{
+            $req  = Request::create($url, $http_method);
+            $route = app()->router->getRoutes()->match($req);
+        } catch (NotFoundHttpException $e){
+            return false;
+        } catch (\Exception $e){
+            return false;
+        }
 
-        $cm = str_replace('App\Http\Controllers\\', '', $route->action['controller'] );
+        $controller_method_with_ns = $route->getAction()['controller'];
 
-        $cm = explode('@', $cm);
+        if(!isset($controller_method_with_ns)) {
+            return false;
+        }
 
-        $controller = $cm[0];
+        $controller_method = str_replace('App\Http\Controllers\\', '', $route->action['controller'] );
 
-        $method = $cm[1];
+        $controller_method = explode('@', $controller_method);
+
+        $controller = $controller_method[0];
+
+        $method = $controller_method[1];
 
         return self::checkAclForUser($controller,$method);
 
     }
 
-    static public function url_html($html, $url, $http_method='get'){
-        return self::url($url, $http_method) ? $html : null;
+    public function url_html($html, $url, $http_method='get'){
+        return $this->url($url, $http_method) ? $html : null;
     }
 
-    static public function link_to($url, $title=null, $attr=[], $http_method='get'){
+    public function link_to($url, $title=null, $attr=[], $http_method='get'){
         $title = $title===null ? $url : $title;
         try{
-            return self::url($url, $http_method) ? html_entity_decode(link_to($url,$title,$attr)) : null;
+            return $this->url($url, $http_method) ? html_entity_decode(link_to($url,$title,$attr)) : null;
         } catch (\Exception $e ){
             return false;
         }
 
     }
+
+
 
 }
