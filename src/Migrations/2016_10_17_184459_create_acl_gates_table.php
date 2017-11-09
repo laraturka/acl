@@ -15,7 +15,7 @@ class CreateAclGatesTable extends Migration
         Schema::create('acl_gates', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('acl_group_id')->index();
-            $table->string('name')->unique()->nullable();
+            $table->string('name')->nullable();
             $table->timestamps();
 
             $table->foreign('acl_group_id')->references('id')->on('acl_groups');
