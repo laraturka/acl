@@ -26,9 +26,9 @@ class AclSeeder extends Seeder
         ]);
 
         DB::table('acl_gates')->insert([
-            ['id' => 1, 'acl_group_id' => 1, 'gate' => null], //admin rule
-            ['id' => 2, 'acl_group_id' => 2, 'gate' => 'oku'],
-            ['id' => 3, 'acl_group_id' => 2, 'gate' => 'upload'],
+            ['id' => 1, 'acl_group_id' => 1, 'name' => null], //admin rule
+            ['id' => 2, 'acl_group_id' => 2, 'name' => 'oku'],
+            ['id' => 3, 'acl_group_id' => 2, 'name' => 'upload'],
         ]);
 
         DB::table('acl_controllers')->insert([
