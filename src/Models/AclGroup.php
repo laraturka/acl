@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class AclGroup extends Model
 {
+
+    protected $fillable = ['name'];
+
     protected $table = 'acl_groups';
 
     protected $dates = ['created_at','updated_at'];
