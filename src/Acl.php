@@ -151,11 +151,14 @@ class Acl {
     static public function getAclForUser($user, $force=false){
 
         //assume auth user if null
-        if( $user == null ){
+        if( is_null( $user ) && auth()->check() ){
             $user = auth()->user();
         }
         elseif(is_int($user)){ //assume user id if integer
             $user = User::find($user);
+        }
+        else {
+            return false;
         }
 
         $id = $user->id;
@@ -195,6 +198,8 @@ class Acl {
     }
 
     public function url($url, $http_method='get'){
+
+        if( !auth()->check() ) return false;
 
         try{
             $req  = Request::create($url, $http_method);
