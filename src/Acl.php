@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Acl {
 
+    use AclHasGate;
+    
     static public function getConfigControllerMethods(){
         $all_controllers = config('acl.controllers');
 
