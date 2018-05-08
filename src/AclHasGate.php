@@ -20,10 +20,11 @@ trait AclHasGate
 
     public function hasGate($gate)
     {
-        return $this->checkIfAuthorized($gate);
+        return $this->checkIfGateAuthorized($gate);
     }
 
     public function checkIfGateAuthorized($gate){
+        if (!auth()->check()) return false;
 
         //gate name is null means wildcard allowed
         $count = DB::table('users')
@@ -31,9 +32,9 @@ trait AclHasGate
             ->join('acl_user_groups', 'acl_user_groups.user_id', '=', 'users.id')
             ->join('acl_groups', 'acl_groups.id', '=', 'acl_user_groups.acl_group_id')
             ->join('acl_gates', 'acl_gates.acl_group_id', '=', 'acl_groups.id')
-            ->where('users.id', '=', $this->id )
+            ->where('users.id', '=', auth()->user()->id  )
             ->where(function ($q) use($gate) { //Check if name is null or equal
-                $q  ->whereNull('acl_gates.name')
+                $q->whereNull('acl_gates.name')
                     ->orWhere('acl_gates.name', $gate);
             })
             ->count();
